@@ -28,7 +28,7 @@ namespace HoloBrawl.Core
             var options = File.ReadLines(OptionsFile);
             foreach (var option in options)
             {
-                Console.WriteLine("Loading option: " + option);
+                Console.WriteLine("[INFO] Loading option: " + option);
                 var split = option.Split(':');
                 if (split.Length < 2)
                     continue;
@@ -41,7 +41,7 @@ namespace HoloBrawl.Core
                         ScreenHeight = int.Parse(split[1]);
                         break;
                     default:
-                        Console.WriteLine("Unknown option: " + split[0]);
+                        Console.WriteLine("[WARNING] Unknown option: " + split[0]);
                         break;
                 }
             }

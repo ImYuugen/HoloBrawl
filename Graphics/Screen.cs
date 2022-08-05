@@ -7,13 +7,13 @@ namespace HoloBrawl.Graphics
 {
     public sealed class Screen : IDisposable
     {
-        private static readonly int MinDim = 144;
-        private static readonly int MaxDim = 4096;
+        private const int MinDim = 144;
+        private const int MaxDim = 4096;
 
         private bool _isSet;
         private bool _isDisposed;
-        private Game _game;
-        private RenderTarget2D _renderTarget;
+        private readonly Game _game;
+        private readonly RenderTarget2D _renderTarget;
 
         public int Width => _renderTarget.Width;
         public int Height => _renderTarget.Height;
@@ -36,7 +36,7 @@ namespace HoloBrawl.Graphics
             _renderTarget?.Dispose();
             _isDisposed = true;
         }
-        
+
         public void Set()
         {
             if (_isSet) throw new InvalidOperationException("Render target is already set. |Screen Set|");

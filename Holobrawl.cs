@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using HoloBrawl.Graphics;
-
+using HoloBrawl.Input;
 using static HoloBrawl.Core.Data;
 
 namespace HoloBrawl
@@ -16,7 +17,10 @@ namespace HoloBrawl
 
         private Screen _screen;
         private Sprites _sprites;
+        private Shapes _shapes;
         private Dictionary<string, Texture2D> _textures;
+        
+        private Random rand = new();
 
         public Holobrawl()
         {
@@ -35,7 +39,8 @@ namespace HoloBrawl
 
             _screen = new Screen(this, ScreenWidth, ScreenHeight);
             _sprites = new Sprites(this);
-            
+            _shapes = new Shapes(this);
+
             base.Initialize();
         }
 
@@ -48,16 +53,19 @@ namespace HoloBrawl
                 {"fauna", Content.Load<Texture2D>("Sprites/fauna")},
                 {"delta", Content.Load<Texture2D>("Sprites/delta")}
             };
-
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            var keyboard = HoloKeyboard.Instance;
+            keyboard.Update();
+            
+            if (keyboard.IsKeyClicked(Keys.Escape))
                 Exit();
-
-            // TODO: Add your update logic here
+            if (keyboard.IsKeyClicked(Keys.F3))
+            {
+                Console.WriteLine($"[INFO]");
+            }
 
             base.Update(gameTime);
         }
@@ -66,6 +74,9 @@ namespace HoloBrawl
         {
             _screen.Set();
             GraphicsDevice.Clear(Color.Black);
+            
+            _shapes.Begin();
+            _shapes.End();
 
             _sprites.Begin(false);
             foreach (var texture2D in _textures.Select(sprite => sprite.Value))
@@ -74,6 +85,7 @@ namespace HoloBrawl
             }
             _sprites.End();
 
+            
             _screen.Unset();
             _screen.Present(_sprites);
             

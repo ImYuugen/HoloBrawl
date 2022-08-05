@@ -6,10 +6,11 @@ namespace HoloBrawl.Graphics
 {
     public sealed class Sprites : IDisposable
     {
-        private Game _game;
+
         private bool _disposed;
-        private SpriteBatch _sprites;
-        private BasicEffect _effect;
+        private readonly Game _game;
+        private readonly SpriteBatch _sprites;
+        private readonly BasicEffect _effect;
         
         public Sprites(Game game)
         {
