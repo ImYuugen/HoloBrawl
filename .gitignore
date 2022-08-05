@@ -5,3 +5,6 @@ obj
 # Rider
 .idea
 *.userprefs 
+
+# Vs
+.vs
