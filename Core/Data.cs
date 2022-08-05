@@ -1,32 +1,31 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
-namespace HoloBrawl.Data
+namespace HoloBrawl.Core
 {
     public static class Data
     {
-        private static readonly string _dataPath 
+        private static readonly string DataPath 
             = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\HoloBrawl\";
-        private static readonly string _optionsFile = _dataPath + "options.xml";
+        private static readonly string OptionsFile = DataPath + "options.txt";
 
-        public static int ScreenWidth = 1280;
-        public static int ScreenHeight = 720;
+        public static int ScreenWidth { get; private set; } = 1280;
+        public static int ScreenHeight { get; private set; } = 720;
 
-        public static void Load()
+        public static void LoadData()
         {
-            if (!Directory.Exists(_dataPath))
+            if (!Directory.Exists(DataPath))
             {
                 Console.WriteLine("Creating data directory");
-                Directory.CreateDirectory(_dataPath);
+                Directory.CreateDirectory(DataPath);
             }
-            if (!File.Exists(_optionsFile))
+            if (!File.Exists(OptionsFile))
             {
                 Console.WriteLine("Creating options file");
-                File.Create(_optionsFile);
+                File.Create(OptionsFile);
             }
-            var options = File.ReadLines(_optionsFile);
+            
+            var options = File.ReadLines(OptionsFile);
             foreach (var option in options)
             {
                 Console.WriteLine("Loading option: " + option);

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
-using HoloBrawl.Graphics;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using HoloBrawl.Graphics;
 
-using static HoloBrawl.Data.Data;
+using static HoloBrawl.Core.Data;
 
 namespace HoloBrawl
 {
@@ -13,6 +14,7 @@ namespace HoloBrawl
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        private Screen _screen;
         private Sprites _sprites;
         private Dictionary<string, Texture2D> _textures;
 
@@ -25,12 +27,13 @@ namespace HoloBrawl
 
         protected override void Initialize()
         {
-            Data.Data.Load();
+            LoadData();
 
-            _graphics.PreferredBackBufferWidth = Data.Data.ScreenWidth;
-            _graphics.PreferredBackBufferHeight = Data.Data.ScreenHeight;
+            _graphics.PreferredBackBufferWidth = ScreenWidth;
+            _graphics.PreferredBackBufferHeight = ScreenHeight;
             _graphics.ApplyChanges();
 
+            _screen = new Screen(this, ScreenWidth, ScreenHeight);
             _sprites = new Sprites(this);
             
             base.Initialize();
@@ -61,19 +64,19 @@ namespace HoloBrawl
 
         protected override void Draw(GameTime gameTime)
         {
+            _screen.Set();
             GraphicsDevice.Clear(Color.Black);
 
             _sprites.Begin(false);
-            foreach (var sprite in _textures)
+            foreach (var texture2D in _textures.Select(sprite => sprite.Value))
             {
-                var texture2D = sprite.Value;
-                _sprites.Draw(texture2D,new Vector2(
-                    texture2D.Width / 2f, texture2D.Height / 2f),
-                    new Vector2(ScreenWidth / 2f, ScreenHeight / 2f), 
-                    Color.White);
+                _sprites.Draw(texture2D, new Vector2(0, 0), new Vector2(ScreenWidth/2f, ScreenHeight/2f), Color.White);
             }
             _sprites.End();
 
+            _screen.Unset();
+            _screen.Present(_sprites);
+            
             base.Draw(gameTime);
         }
     }
