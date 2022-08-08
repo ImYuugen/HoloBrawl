@@ -38,11 +38,22 @@ namespace HoloBrawl.Graphics
             _disposed = true;
         }
 
-        public void Begin(bool textureFiltering = true)
+        public void Begin(Camera camera, bool textureFiltering = true)
         {
-            var vp = _game.GraphicsDevice.Viewport;
-            _effect.Projection = 
-                Matrix.CreateOrthographicOffCenter(0, vp.Width, 0, vp.Height, 0, 1);
+
+            if (camera is null)
+            {
+                var vp = _game.GraphicsDevice.Viewport;
+                _effect.Projection = 
+                    Matrix.CreateOrthographicOffCenter(0, vp.Width, 0, vp.Height, 0, 1);
+                _effect.View = Matrix.Identity;
+            }
+            else
+            {
+                camera.UpdateMatrices();
+                _effect.View = camera.View;
+                _effect.Projection = camera.Projection;
+            }
 
             _sprites.Begin(
                 blendState:BlendState.AlphaBlend, 

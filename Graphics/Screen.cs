@@ -61,7 +61,7 @@ namespace HoloBrawl.Graphics
 #else
             _game.GraphicsDevice.Clear(Color.Black);
 #endif
-            sprites.Begin(textureFiltering);
+            sprites.Begin(null, textureFiltering);
             sprites.Draw(_renderTarget, null, GetDestinationRectangle(), Color.White);
             sprites.End();
         }

@@ -7,14 +7,14 @@ namespace HoloBrawl.Graphics;
 
 public sealed class Shapes : IDisposable
 {
-    public const float MinThickness = 2f;
-    public const float MaxThickness = 100f;
+    private const float MinThickness = 2f;
+    private const float MaxThickness = 100f;
 
-    private Game _game;
-    private BasicEffect _effect;
+    private readonly Game _game;
+    private readonly BasicEffect _effect;
 
-    private VertexPositionColor[] _vertices;
-    private int[] _indices;
+    private readonly VertexPositionColor[] _vertices;
+    private readonly int[] _indices;
 
     private int _shapesCount;
     private int _vertexCount;
@@ -38,11 +38,11 @@ public sealed class Shapes : IDisposable
             Projection = Matrix.Identity
         };
         
-        const int MaxVertices = 1024;
-        const int MaxIndices = MaxVertices * 3;
+        const int maxVertices = 1024;
+        const int maxIndices = maxVertices * 3;
         
-        _vertices = new VertexPositionColor[MaxVertices];
-        _indices = new int[MaxIndices];
+        _vertices = new VertexPositionColor[maxVertices];
+        _indices = new int[maxIndices];
         
         _shapesCount = 0;
         _vertexCount = 0;
@@ -59,14 +59,25 @@ public sealed class Shapes : IDisposable
         _isDisposed = true;
     }
     
-    public void Begin()
+    public void Begin(Camera camera)
     {
         if (_isStarted)
             throw new InvalidOperationException("Shapes.Begin() was called twice without calling Shapes.End()");
+     
         
-        var vp = _game.GraphicsDevice.Viewport;
-        _effect.Projection = 
-            Matrix.CreateOrthographicOffCenter(0, vp.Width, 0, vp.Height, 0, 1);
+        if (camera is null)
+        {
+            var vp = _game.GraphicsDevice.Viewport;
+            _effect.Projection = 
+                Matrix.CreateOrthographicOffCenter(0, vp.Width, 0, vp.Height, 0, 1);
+            _effect.View = Matrix.Identity;
+        }
+        else
+        {
+            camera.UpdateMatrices();
+            _effect.View = camera.View;
+            _effect.Projection = camera.Projection;
+        }
         
         _isStarted = true;
     }
@@ -77,7 +88,7 @@ public sealed class Shapes : IDisposable
         _isStarted = false;
     }
 
-    public void Flush()
+    private void Flush()
     {
         if (_shapesCount == 0)
             return;
@@ -102,6 +113,14 @@ public sealed class Shapes : IDisposable
         _indexCount = 0;
     }
 
+    /// <summary>
+    /// Draws a Rectangle.
+    /// </summary>
+    /// <param name="x">The x coordinate of the bottom left corner of the rectangle</param>
+    /// <param name="y">The y coordinate of the bottom left corner of the rectangle</param>
+    /// <param name="width">The width of the rectangle in pixels</param>
+    /// <param name="height">The height pf the rectangle in pixels</param>
+    /// <param name="color">The color of the rectangle</param>
     public void DrawRectangle(float x, float y, float width, float height, Color color)
     {
         EnsureStarted();
@@ -129,7 +148,17 @@ public sealed class Shapes : IDisposable
         _shapesCount++;
     }
     
-    public void DrawLine(Vector2 a, Vector2 b, float thickness, Color color)
+    /// <summary>
+    /// Wrapper for DrawRectangle that takes a Rectangle as input.
+    /// </summary>
+    /// <param name="rectangle">The desired rectangle</param>
+    /// <param name="color">The desired color</param>
+    public void DrawRectangle(Rectangle rectangle, Color color)
+    {
+        DrawRectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, color);
+    }
+
+    private void DrawLine(float ax, float ay, float bx, float by, float thickness, Color color)
     {
         EnsureStarted();
         
@@ -139,20 +168,22 @@ public sealed class Shapes : IDisposable
 
         thickness = Utils.Clamp(thickness, MinThickness, MaxThickness);
         var halfThickness = thickness / 2f;
-        
-        var e1 = b - a;
-        e1.Normalize();
-        e1 *= halfThickness;
-        var e2 = -e1;
 
-        var n1 = new Vector2(-e1.Y, e1.X);
-        var n2 = -n1;
+        float e1X = bx - ax, e1Y = by - ay;
+        Utils.Normalize(ref e1X, ref e1Y);
+        e1X *= halfThickness;
+        e1Y *= halfThickness;
         
-        var q1 = a + e2 + n1;
-        var q2 = b + e1 + n1;
-        var q3 = b + e1 + n2;
-        var q4 = a + e2 + n2;
-        
+        float e2X = -e1X, e2Y = -e1Y;
+
+        float n1X = -e1Y, n1Y = e1X;
+        float n2X = -n1X, n2Y = -n1Y;
+
+        float q1X = ax + e2X + n1X, q1Y = ay + e2Y + n1Y;
+        float q2X = bx + e1X + n1X, q2Y = by + e1Y + n1Y;
+        float q3X = bx + e1X + n2X, q3Y = by + e1Y + n2Y;
+        float q4X = ax + e2X + n2X, q4Y = ay + e2Y + n2Y;
+
         _indices[_indexCount++] = _vertexCount;
         _indices[_indexCount++] = _vertexCount + 1;
         _indices[_indexCount++] = _vertexCount + 2;
@@ -160,22 +191,34 @@ public sealed class Shapes : IDisposable
         _indices[_indexCount++] = _vertexCount + 2;
         _indices[_indexCount++] = _vertexCount + 3;
         
-        _vertices[_vertexCount++] = new VertexPositionColor(new Vector3(q1, 0f), color);
-        _vertices[_vertexCount++] = new VertexPositionColor(new Vector3(q2, 0f), color);
-        _vertices[_vertexCount++] = new VertexPositionColor(new Vector3(q3, 0f), color);
-        _vertices[_vertexCount++] = new VertexPositionColor(new Vector3(q4, 0f), color);
+        _vertices[_vertexCount++] = new VertexPositionColor(new Vector3(q1X, q1Y, 0f), color);
+        _vertices[_vertexCount++] = new VertexPositionColor(new Vector3(q2X, q2Y, 0f), color);
+        _vertices[_vertexCount++] = new VertexPositionColor(new Vector3(q3X, q3Y, 0f), color);
+        _vertices[_vertexCount++] = new VertexPositionColor(new Vector3(q4X, q4Y, 0f), color);
 
         _shapesCount++;
     }
     
-    
-    public void EnsureStarted()
+    /// <summary>
+    /// Wrapper for DrawLine
+    /// </summary>
+    /// <param name="a">Point A</param>
+    /// <param name="b">Point B</param>
+    /// <param name="thickness">The thickness of the line</param>
+    /// <param name="color">The color of the line</param>
+    public void DrawLine(Vector2 a, Vector2 b, float thickness, Color color)
+    {
+        DrawLine(a.X, a.Y, b.X, b.Y, thickness, color);
+    }
+
+
+    private void EnsureStarted()
     {
         if (!_isStarted)
             throw new InvalidOperationException("[ERROR] Batching is not started, call Shapes.Begin() first");
     }
 
-    public void EnsureSpace(int vertexCount, int indexCount)
+    private void EnsureSpace(int vertexCount, int indexCount)
     {
         if (vertexCount > _vertices.Length)
             throw new ArgumentOutOfRangeException(nameof(vertexCount), "[ERROR] Vertex count is too big, passed " + vertexCount + ", max is " + _vertices.Length);

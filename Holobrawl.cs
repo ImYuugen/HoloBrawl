@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,15 +13,15 @@ namespace HoloBrawl
 {
     public class Holobrawl : Game
     {
-        private GraphicsDeviceManager _graphics;
+        private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
+        
         private Screen _screen;
+        private Camera _camera;
+
         private Sprites _sprites;
         private Shapes _shapes;
         private Dictionary<string, Texture2D> _textures;
-        
-        private Random rand = new();
 
         public Holobrawl()
         {
@@ -36,11 +37,13 @@ namespace HoloBrawl
             _graphics.PreferredBackBufferWidth = ScreenWidth;
             _graphics.PreferredBackBufferHeight = ScreenHeight;
             _graphics.ApplyChanges();
-
+            
             _screen = new Screen(this, ScreenWidth, ScreenHeight);
+            _camera = new Camera(_screen);
+            
             _sprites = new Sprites(this);
             _shapes = new Shapes(this);
-
+            
             base.Initialize();
         }
 
@@ -61,10 +64,25 @@ namespace HoloBrawl
             keyboard.Update();
             
             if (keyboard.IsKeyClicked(Keys.Escape))
+            {
                 Exit();
+            }
             if (keyboard.IsKeyClicked(Keys.F3))
             {
-                Console.WriteLine($"[INFO]");
+                Console.WriteLine($"[INFO BATCH] @ game time {gameTime.TotalGameTime}.");
+                Console.WriteLine($"  ├ FPS: {1 / gameTime.ElapsedGameTime.TotalSeconds:#00.0}");
+                Console.WriteLine($"  ├ Memory: {GC.GetTotalMemory(false) / 1024 / 1024:#####.#####} MB");
+                _camera.GetExtents(out Vector2 min, out var max);
+                Console.WriteLine($"  └─ Camera: {_camera.Position}, Z : {_camera.Z}, Zoom : {_camera.Zoom}, Extents : {min} - {max}\n");
+
+            }
+            if (keyboard.IsKeyClicked(Keys.Q))
+            {
+                _camera.ZoomIn();
+            }
+            if (keyboard.IsKeyClicked(Keys.E))
+            {
+                _camera.ZoomOut();
             }
 
             base.Update(gameTime);
@@ -75,13 +93,18 @@ namespace HoloBrawl
             _screen.Set();
             GraphicsDevice.Clear(Color.Black);
             
-            _shapes.Begin();
+            _shapes.Begin(_camera);
+            _shapes.DrawRectangle(new Rectangle(0, -ScreenHeight, ScreenWidth, 2 * ScreenHeight), Color.MidnightBlue);
+            _shapes.DrawRectangle(new Rectangle(-ScreenWidth, -ScreenHeight, ScreenWidth, 2 * ScreenHeight), Color.Teal);
+            _shapes.DrawLine(new Vector2(-ScreenWidth, -ScreenHeight), new Vector2(ScreenWidth, ScreenHeight), 4,Color.DodgerBlue);
+            _shapes.DrawLine(new Vector2(-ScreenWidth, ScreenHeight), new Vector2(ScreenWidth, -ScreenHeight), 4,Color.DarkViolet);
             _shapes.End();
 
-            _sprites.Begin(false);
+            _sprites.Begin(_camera, false);
             foreach (var texture2D in _textures.Select(sprite => sprite.Value))
             {
-                _sprites.Draw(texture2D, new Vector2(0, 0), new Vector2(ScreenWidth/2f, ScreenHeight/2f), Color.White);
+                _sprites.Draw(texture2D, null, new Vector2(texture2D.Width/2f, texture2D.Height/2f),
+                    Vector2.Zero, 0, Vector2.One, Color.White);
             }
             _sprites.End();
 
