@@ -83,9 +83,9 @@ namespace HoloBrawl
                 Console.WriteLine($"  ├ Memory: {GC.GetTotalMemory(false) / 1024 / 1024:#####.#####} MB");
                 Console.WriteLine($"  ├ Screen: {ScreenWidth}x{ScreenHeight}, Fullscreen: {_graphics.IsFullScreen}");
                 _camera.GetExtents(out Vector2 min, out var max);
-                Console.WriteLine($"  └─ Camera: {_camera.Position}, Z : {_camera.Z}, Zoom : {_camera.Zoom}, Extents : {min} - {max}\n");
+                Console.WriteLine($"  └ Camera: {_camera.Position}, Z : {_camera.Z}, Zoom : {_camera.Zoom}, Extents : {min} - {max}\n");
 
-            }
+            } //Game info
             if (keyboard.IsKeyClicked(Keys.Q))
             {
                 _camera.ZoomIn();
@@ -108,21 +108,26 @@ namespace HoloBrawl
             
             _screen.Set();
             GraphicsDevice.Clear(Color.Black);
+
+            var transform = new Transform2D(new Vector2(0f, -100f), 0f, 1f);
             
             _shapes.Begin(_camera);
-            _shapes.DrawLine(Vector2.UnitX * 1000, Vector2.UnitX * -1000, 2, Color.DimGray);
-            _shapes.DrawLine(Vector2.UnitY * 1000, Vector2.UnitY * -1000, 2, Color.DimGray);
-            _shapes.DrawRectangle(new Rectangle(-1, -1, 2, 2),1, Color.White);
-            _shapes.DrawRectangle(new Rectangle(-100, -100, 200, 200), 5, Color.MidnightBlue);
-            _shapes.DrawCircle(0, 0, 100, 64, 4, Color.Red);
+            _shapes.DrawPolygon(
+                new Vector2[] {
+                    new Vector2(0, 200), 
+                    new Vector2(100, -50), 
+                    new Vector2(20, -10), 
+                    new Vector2(-20, -10), 
+                    new Vector2(-100f, -50f)}, 
+                transform, 0f, Color.White);
             _shapes.End();
 
             _sprites.Begin(_camera, false);
-            foreach (var texture2D in _textures.Select(sprite => sprite.Value))
-            {
-                _sprites.Draw(texture2D, null, new Vector2(texture2D.Width/2f, texture2D.Height/2f),
-                    Vector2.Zero, 0, Vector2.One, Color.White);
-            }
+            // foreach (var texture2D in _textures.Select(sprite => sprite.Value))
+            // {
+            //     _sprites.Draw(texture2D, null, new Vector2(texture2D.Width/2f, texture2D.Height/2f),
+            //         Vector2.Zero, 0, Vector2.One, Color.White);
+            // }
             _sprites.End();
 
             

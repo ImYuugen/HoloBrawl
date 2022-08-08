@@ -210,25 +210,6 @@ public sealed class Shapes : IDisposable
             ay = by;
         }
     }
-
-    /// <summary>
-    /// Draws a wireframe polygon.
-    /// </summary>
-    /// <param name="vertices">An array of vertices, if smaller than 2, will do nothing</param>
-    /// <param name="thickness">The thickness of the edges</param>
-    /// <param name="color">The color of the edges</param>
-    /// <remarks>The order of the vertices list is important as the lines will be drawn from a point <b>i</b> to a point <b>i + 1</b></remarks>>
-    public void DrawPolygon(Vector2[] vertices, float thickness, Color color)
-    {
-        if (vertices is null || vertices.Length < 2)
-            return;
-        
-        for (var i = 0; i < vertices.Length; i++)
-        {
-            DrawLine(vertices[i], vertices[(i + 1) % vertices.Length], thickness, color);
-        }
-    }
-
     
     #region Rectangles
 
@@ -303,6 +284,32 @@ public sealed class Shapes : IDisposable
     }
 
     #endregion
+    
+    /// <summary>
+    /// Draws a wireframe polygon.
+    /// </summary>
+    /// <param name="vertices">An array of vertices, if smaller than 2, will do nothing</param>
+    /// <param name="transform"> The transform matrix to use</param>
+    /// <param name="thickness">The thickness of the edges</param>
+    /// <param name="color">The color of the edges</param>
+    /// <remarks>The order of the vertices list is important as the lines will be drawn from a point <b>i</b> to a point <b>i + 1</b> &#10;</remarks>>
+    /// <remarks>The transform matrix should look like <b>new FlatTransform(<i>params</i>)</b></remarks>
+    public void DrawPolygon(Vector2[] vertices, Transform2D transform, float thickness, Color color)
+    {
+        if (vertices is null || vertices.Length < 2)
+            return;
+        
+        for (var i = 0; i < vertices.Length; i++)
+        {
+            var a = vertices[i];
+            var b = vertices[(i + 1) % vertices.Length];
+            
+            a = Utils.Transform(a, transform);
+            b = Utils.Transform(b, transform);
+            
+            DrawLine(a, b, thickness, color);
+        }
+    }
 
     private void EnsureStarted()
     {

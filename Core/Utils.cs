@@ -57,4 +57,52 @@ public static class Utils
         graphicsDeviceManager.HardwareModeSwitch = false; // False is borderless fullscreen
         graphicsDeviceManager.IsFullScreen = fullscreen;
     }
+    
+    
+    public static Vector2 Transform(Vector2 position, Transform2D tranform)
+    {
+        //Scale
+        var sx = position.X * tranform.ScaleX;
+        var sy = position.Y * tranform.ScaleY;
+        
+        //Rotation
+        var rx = sx * tranform.Cos - sy * tranform.Sin;
+        var ry = sx * tranform.Sin + sy * tranform.Cos;
+        
+        //Translation
+        var tx = rx + tranform.PosX;
+        var ty = ry + tranform.PosY;
+        
+        return new Vector2(tx, ty);
+    }
+}
+
+public struct Transform2D
+{
+    public float PosX;
+    public float PosY;
+    public float Sin;
+    public float Cos;
+    public float ScaleX;
+    public float ScaleY;
+    
+    public Transform2D(Vector2 position, float rotation, Vector2 scale)
+    {
+        PosX = position.X;
+        PosY = position.Y;
+        Sin = (float)Math.Sin(rotation);
+        Cos = (float)Math.Cos(rotation);
+        ScaleX = scale.X;
+        ScaleY = scale.Y;
+    }
+    
+    public Transform2D(Vector2 position, float rotation, float scale)
+    {
+        PosX = position.X;
+        PosY = position.Y;
+        Sin = (float)Math.Sin(rotation);
+        Cos = (float)Math.Cos(rotation);
+        ScaleX = scale;
+        ScaleY = scale;
+    }
 }
