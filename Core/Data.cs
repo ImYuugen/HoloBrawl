@@ -11,6 +11,7 @@ namespace HoloBrawl.Core
 
         public static int ScreenWidth { get; private set; } = 1280;
         public static int ScreenHeight { get; private set; } = 720;
+        public static bool Fullscreen { get; private set; } = false;
 
         public static void LoadData()
         {
@@ -39,6 +40,12 @@ namespace HoloBrawl.Core
                         break;
                     case "ScreenHeight":
                         ScreenHeight = int.Parse(split[1]);
+                        break;
+                    case "Fullscreen":
+                        if (bool.TryParse(split[1], out var temp))
+                            Fullscreen = temp;
+                        else
+                            Console.WriteLine("[WARNING] Could not parse fullscreen option, using default");
                         break;
                     default:
                         Console.WriteLine("[WARNING] Unknown option: " + split[0]);

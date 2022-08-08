@@ -11,13 +11,13 @@ namespace HoloBrawl.Graphics
         private const float MaxZ = 2048f;
         private const int MinZoom = 1;
         private const int MaxZoom = 8;
-
-        private float _baseZ;
+        
 
         private float _fov;
         private float _aspectRatio;
         
         public Vector2 Position { get; private set; }
+        public float BaseZ { get; }
         public float Z { get; private set; }
         public int Zoom { get; private set; }
         public Matrix View { get; private set; }
@@ -34,8 +34,8 @@ namespace HoloBrawl.Graphics
             Zoom = 1;
             
             Position = Vector2.Zero;
-            _baseZ = GetZFromHeight(screen.Height);
-            Z = _baseZ;
+            BaseZ = GetZFromHeight(screen.Height);
+            Z = BaseZ;
 
             UpdateMatrices();
         }
@@ -65,7 +65,7 @@ namespace HoloBrawl.Graphics
         
         public void ResetZ()
         {
-            Z = _baseZ;
+            Z = BaseZ;
         }
         
         public void Move(Vector2 amount)
@@ -83,7 +83,7 @@ namespace HoloBrawl.Graphics
         {
             Zoom = amount;
             Zoom = Utils.Clamp(Zoom, MinZoom, MaxZoom);
-            Z = _baseZ / Zoom;
+            Z = BaseZ / Zoom;
         }
         public void ZoomIn()
         {

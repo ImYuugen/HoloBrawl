@@ -1,9 +1,14 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace HoloBrawl.Core;
 
 public static class Utils
 {
+    
+    /// <summary>
+    /// Clamps a value between a minimum and maximum value.
+    /// </summary>
     public static T Clamp<T>(T value, T min, T max) where T : IComparable<T>
     {
         if (min.CompareTo(max) > 0)
@@ -17,6 +22,11 @@ public static class Utils
             return value;
     }
     
+    /// <summary>
+    /// Normalizes a vector to a length of 1.
+    /// </summary>
+    /// <param name="x">The x coordinate of the vector</param>
+    /// <param name="y">Blahblah y blahblah</param>
     public static void Normalize(ref float x, ref float y)
     {
         var invSqrt = FastInvSqrt(x*x + y*y); // 1 / sqrt(x*x + y*y) using Quake's fast inverse square root
@@ -27,8 +37,6 @@ public static class Utils
     /// <summary>
     /// Computes the inverse square root of x.
     /// </summary>
-    /// <param name="x"></param>
-    /// <returns></returns>
     private static float FastInvSqrt(float x)
     {
         var xHalf = 0.5f * x;
@@ -37,5 +45,16 @@ public static class Utils
         x = BitConverter.Int32BitsToSingle(i);
         x = x * (1.5f - xHalf * x * x);
         return x;
+    }
+
+    public static void ToggleFullscreen(GraphicsDeviceManager graphicsDeviceManager)
+    {
+        graphicsDeviceManager.HardwareModeSwitch = false; // False is borderless fullscreen
+        graphicsDeviceManager.ToggleFullScreen();
+    }
+    public static void SetFullscreen(GraphicsDeviceManager graphicsDeviceManager, bool fullscreen)
+    {
+        graphicsDeviceManager.HardwareModeSwitch = false; // False is borderless fullscreen
+        graphicsDeviceManager.IsFullScreen = fullscreen;
     }
 }
