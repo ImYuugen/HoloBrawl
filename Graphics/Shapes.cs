@@ -107,6 +107,8 @@ public sealed class Shapes : IDisposable
         _indexCount = 0;
     }
 
+    #region Lines
+
     /// <summary>
     /// Draws a line between the two given points.
     /// </summary>
@@ -174,6 +176,8 @@ public sealed class Shapes : IDisposable
     {
         DrawLine(a.X, a.Y, b.X, b.Y, thickness, color);
     }
+    
+    #endregion
 
     #region Circles
     

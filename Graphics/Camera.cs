@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using HoloBrawl.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,6 +16,7 @@ namespace HoloBrawl.Graphics
 
         private readonly float _fov;
         private readonly float _aspectRatio;
+        private readonly Holobrawl _game;
         
         public Vector2 Position { get; private set; }
         public float BaseZ { get; }
@@ -30,6 +32,7 @@ namespace HoloBrawl.Graphics
             
             _aspectRatio = (float)screen.Width / screen.Height;
             _fov = MathHelper.PiOver2;
+            _game = screen.Game;
 
             Zoom = 1;
             
@@ -42,7 +45,7 @@ namespace HoloBrawl.Graphics
 
         public void UpdateMatrices()
         {
-            View = Matrix.CreateLookAt(new Vector3(0, 0, Z), Vector3.Zero, Vector3.Up);
+            View = Matrix.CreateLookAt(new Vector3(Position.X, Position.Y, Z), new Vector3(Position.X, Position.Y, 0), Vector3.Up);
             Projection = Matrix.CreatePerspectiveFieldOfView(_fov, _aspectRatio, MinZ, MaxZ);
         }
         
@@ -68,6 +71,8 @@ namespace HoloBrawl.Graphics
             Z = BaseZ;
         }
         
+        #region MoveCam
+        
         public void Move(Vector2 amount)
         {
             Position += amount;
@@ -78,6 +83,17 @@ namespace HoloBrawl.Graphics
             Position = position;
         }
 
+        public void FollowPlayers()
+        {
+            var players = _game.Players;
+            var camPos = players.Aggregate(Vector2.Zero, (current, player) => current + player.Position);
+            camPos /= players.Count;
+            
+            Position = camPos;
+        }
+
+        #endregion
+        
         #region Zooms
         public void SetZoom(int amount)
         {

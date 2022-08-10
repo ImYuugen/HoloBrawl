@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using HoloBrawl.Core;
+using HoloBrawl.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,6 +24,7 @@ namespace HoloBrawl
         private Sprites _sprites;
         private Shapes _shapes;
         private Dictionary<string, Texture2D> _textures;
+        public List<Character> Players { get; private set; }
 
         private Random _random;
         private Stopwatch _stopwatch;
@@ -53,7 +55,7 @@ namespace HoloBrawl
             
             _random = new Random();
             _stopwatch = new Stopwatch();
-            
+
             base.Initialize();
         }
 
@@ -64,7 +66,17 @@ namespace HoloBrawl
             _textures = new Dictionary<string, Texture2D>
             {
                 {"fauna", Content.Load<Texture2D>("Sprites/fauna")},
-                {"delta", Content.Load<Texture2D>("Sprites/delta")}
+                {"delta", Content.Load<Texture2D>("Sprites/delta")},
+                {"p1", Content.Load<Texture2D>("Sprites/p1")},
+                {"p2", Content.Load<Texture2D>("Sprites/p2")},
+            };
+            
+            Players = new List<Character>
+            {
+                // new Character(_textures["fauna"], Vector2.UnitX * 100),
+                // new Character(_textures["delta"], Vector2.UnitX * -100),
+                new (_textures["p1"], "p1", Vector2.UnitX * 100),
+                new (_textures["p2"], "p2", Vector2.UnitX * -100),
             };
         }
 
@@ -77,6 +89,7 @@ namespace HoloBrawl
             {
                 Exit();
             }
+#if DEBUG
             if (keyboard.IsKeyClicked(Keys.F3))
             {
                 Console.WriteLine($"[INFO BATCH] @ game time {gameTime.TotalGameTime}.");
@@ -100,9 +113,16 @@ namespace HoloBrawl
             {
                 Utils.ToggleFullscreen(_graphics);
             }
+#endif
+
+            foreach (var player in Players)
+            {
+                player.Update(gameTime);
+            }
             
             angle = MathHelper.PiOver4 * (float)gameTime.TotalGameTime.TotalSeconds;
 
+            _camera.FollowPlayers();
             base.Update(gameTime);
         }
 
@@ -114,9 +134,19 @@ namespace HoloBrawl
             GraphicsDevice.Clear(Color.Black);
 
             _shapes.Begin(_camera);
+            for (int i = 0; i < 100; i++)
+            {
+                _shapes.DrawFilledRectangle(-100, i * -100, 200, 100, new Color(i * 10, i * 10, i * 10));
+            }
             _shapes.End();
 
             _sprites.Begin(_camera, false);
+            
+            foreach (var player in Players)
+            {
+                player.DrawEntity(_sprites);
+            }
+            
             _sprites.End();
             
             _screen.Unset();

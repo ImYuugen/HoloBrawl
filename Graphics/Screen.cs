@@ -12,15 +12,15 @@ namespace HoloBrawl.Graphics
 
         private bool _isSet;
         private bool _isDisposed;
-        private readonly Game _game;
         private readonly RenderTarget2D _renderTarget;
 
+        public Holobrawl Game { get; }
         public int Width => _renderTarget.Width;
         public int Height => _renderTarget.Height;
         
-        public Screen(Game game, int width, int height)
+        public Screen(Holobrawl game, int width, int height)
         {
-            _game = game ?? throw new ArgumentNullException(nameof(game), "Game was null. |Screen Initializer|");
+            Game = game ?? throw new ArgumentNullException(nameof(game), "Game was null. |Screen Initializer|");
             _renderTarget = new RenderTarget2D(
                 game.GraphicsDevice, 
                 Utils.Clamp(width, MinDim, MaxDim), 
@@ -41,7 +41,7 @@ namespace HoloBrawl.Graphics
         {
             if (_isSet) throw new InvalidOperationException("Render target is already set. |Screen Set|");
             
-            _game.GraphicsDevice.SetRenderTarget(_renderTarget);
+            Game.GraphicsDevice.SetRenderTarget(_renderTarget);
             _isSet = true;
         }
         
@@ -49,7 +49,7 @@ namespace HoloBrawl.Graphics
         {
             if (!_isSet) throw new InvalidOperationException("Render target is not set. |Screen Unset|");
             
-            _game.GraphicsDevice.SetRenderTarget(null);
+            Game.GraphicsDevice.SetRenderTarget(null);
             _isSet = false;
         }
 
@@ -57,7 +57,7 @@ namespace HoloBrawl.Graphics
         {
             if (sprites is null) throw new ArgumentNullException(nameof(sprites), "Sprites was null. |Screen Present|");
 #if DEBUG            
-            _game.GraphicsDevice.Clear(Color.LimeGreen);
+            Game.GraphicsDevice.Clear(Color.LimeGreen);
 #else
             _game.GraphicsDevice.Clear(Color.Black);
 #endif
@@ -68,7 +68,7 @@ namespace HoloBrawl.Graphics
         
         private Rectangle GetDestinationRectangle()
         { 
-            Rectangle backBufferBounds = _game.GraphicsDevice.PresentationParameters.Bounds;
+            Rectangle backBufferBounds = Game.GraphicsDevice.PresentationParameters.Bounds;
             var backBufferRatio = (float)backBufferBounds.Width / backBufferBounds.Height;
             var screenRatio = (float)Width / Height;
             

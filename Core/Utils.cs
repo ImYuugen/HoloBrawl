@@ -60,8 +60,7 @@ public static class Utils
     
     
     public static Vector2 Transform(Vector2 position, Transform2D transform) 
-        => new (
-            position.X * transform.CosScaleX - position.Y * transform.SinScaleY + transform.PosX,
+        => new (position.X * transform.CosScaleX - position.Y * transform.SinScaleY + transform.PosX,
             position.X * transform.SinScaleX + position.Y * transform.CosScaleY + transform.PosY);
 
     /// <summary>
