@@ -7,7 +7,7 @@ namespace HoloBrawl.Graphics;
 
 public sealed class Shapes : IDisposable
 {
-    private const float MinThickness = 2f;
+    private const float MinThickness = .5f;
     private const float MaxThickness = 100f;
 
     private readonly Game _game;
@@ -175,6 +175,8 @@ public sealed class Shapes : IDisposable
         DrawLine(a.X, a.Y, b.X, b.Y, thickness, color);
     }
 
+    #region Circles
+    
     /// <summary>
     /// Draws a wireframe circle
     /// </summary>
@@ -210,7 +212,50 @@ public sealed class Shapes : IDisposable
             ay = by;
         }
     }
+
+    public void DrawFilledCircle(float x, float y, float radius, int points, Color color)
+    {
+        EnsureStarted();
+        const int minPoints = 3;
+        const int maxPoints = 256;
+
+        var shapeVertexCount = Utils.Clamp(points, minPoints, maxPoints);
+        var shapeTriangleCount = shapeVertexCount - 2;
+        var shapeIndexCount = shapeTriangleCount * 3;
+        
+        EnsureSpace(shapeVertexCount, shapeIndexCount);
+
+        var index = 1;
+        for (var i = 0; i < shapeTriangleCount; i++)
+        {
+            _indices[_indexCount++] = _vertexCount;
+            _indices[_indexCount++] = index + _vertexCount;
+            _indices[_indexCount++] = index + 1 + _vertexCount;
+            
+            index++;
+        }
+        
+        var rotation = MathHelper.TwoPi / points;
+        float sin = (float)Math.Sin(rotation), cos = (float)Math.Cos(rotation);
+
+        var ax = radius;
+        var ay = 0f;
+
+        for (var i = 0; i < shapeVertexCount; i++)
+        {
+            float x1 = ax, y1 = ay;
+            
+            _vertices[_vertexCount++] = new VertexPositionColor(new Vector3(x1 + x, y1 + y, 0f), color);
+            
+            ax = cos * x1 - sin * y1;
+            ay = sin * x1 + cos * y1;
+        }
+        
+        _shapesCount++;
+    }
     
+    #endregion
+
     #region Rectangles
 
     /// <summary>
@@ -285,6 +330,8 @@ public sealed class Shapes : IDisposable
 
     #endregion
     
+    #region Polygons
+    
     /// <summary>
     /// Draws a wireframe polygon.
     /// </summary>
@@ -311,12 +358,36 @@ public sealed class Shapes : IDisposable
         }
     }
 
+    public void DrawFilledPolygon(Vector2[] vertices, int[] triangleIndices, Transform2D transform, Color color)
+    {
+        if (vertices is null || vertices.Length < 3)
+            return;
+
+        EnsureStarted();
+        EnsureSpace(vertices.Length, triangleIndices.Length);
+
+        foreach (var t in triangleIndices)
+        {
+            _indices[_indexCount++] = _vertexCount + t;
+        }
+
+        foreach (var t in vertices)
+        {
+            var vertex = Utils.Transform(t, transform);
+
+            _vertices[_vertexCount++] = new VertexPositionColor(new Vector3(vertex, 0f), color);
+        }
+
+        _shapesCount++;
+    }
+    
+    #endregion
+
     private void EnsureStarted()
     {
         if (!_isStarted)
             throw new InvalidOperationException("[ERROR] Batching is not started, call Shapes.Begin() first");
     }
-
     private void EnsureSpace(int vertexCount, int indexCount)
     {
         if (vertexCount > _vertices.Length)

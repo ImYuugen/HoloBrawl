@@ -13,8 +13,8 @@ namespace HoloBrawl.Graphics
         private const int MaxZoom = 8;
         
 
-        private float _fov;
-        private float _aspectRatio;
+        private readonly float _fov;
+        private readonly float _aspectRatio;
         
         public Vector2 Position { get; private set; }
         public float BaseZ { get; }

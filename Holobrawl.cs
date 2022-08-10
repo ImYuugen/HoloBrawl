@@ -26,6 +26,8 @@ namespace HoloBrawl
 
         private Random _random;
         private Stopwatch _stopwatch;
+
+        private float angle = 0f;
         
         public Holobrawl()
         {
@@ -98,6 +100,8 @@ namespace HoloBrawl
             {
                 Utils.ToggleFullscreen(_graphics);
             }
+            
+            angle = MathHelper.PiOver4 * (float)gameTime.TotalGameTime.TotalSeconds;
 
             base.Update(gameTime);
         }
@@ -109,27 +113,11 @@ namespace HoloBrawl
             _screen.Set();
             GraphicsDevice.Clear(Color.Black);
 
-            var transform = new Transform2D(new Vector2(0f, -100f), 0f, 1f);
-            
             _shapes.Begin(_camera);
-            _shapes.DrawPolygon(
-                new Vector2[] {
-                    new Vector2(0, 200), 
-                    new Vector2(100, -50), 
-                    new Vector2(20, -10), 
-                    new Vector2(-20, -10), 
-                    new Vector2(-100f, -50f)}, 
-                transform, 0f, Color.White);
             _shapes.End();
 
             _sprites.Begin(_camera, false);
-            // foreach (var texture2D in _textures.Select(sprite => sprite.Value))
-            // {
-            //     _sprites.Draw(texture2D, null, new Vector2(texture2D.Width/2f, texture2D.Height/2f),
-            //         Vector2.Zero, 0, Vector2.One, Color.White);
-            // }
             _sprites.End();
-
             
             _screen.Unset();
             _screen.Present(_sprites);

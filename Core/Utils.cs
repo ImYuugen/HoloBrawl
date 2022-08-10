@@ -59,21 +59,26 @@ public static class Utils
     }
     
     
-    public static Vector2 Transform(Vector2 position, Transform2D tranform)
+    public static Vector2 Transform(Vector2 position, Transform2D transform) 
+        => new (
+            position.X * transform.CosScaleX - position.Y * transform.SinScaleY + transform.PosX,
+            position.X * transform.SinScaleX + position.Y * transform.CosScaleY + transform.PosY);
+
+    /// <summary>
+    /// Takes a list of points and returns a list of lines between them.
+    /// </summary>
+    public static int[] Triangulate(Vector2[] vertices)
     {
-        //Scale
-        var sx = position.X * tranform.ScaleX;
-        var sy = position.Y * tranform.ScaleY;
-        
-        //Rotation
-        var rx = sx * tranform.Cos - sy * tranform.Sin;
-        var ry = sx * tranform.Sin + sy * tranform.Cos;
-        
-        //Translation
-        var tx = rx + tranform.PosX;
-        var ty = ry + tranform.PosY;
-        
-        return new Vector2(tx, ty);
+        var triangleIndices = new int[(vertices.Length - 2) * 3];
+        var index = 0;
+        for (var i = 0; i < vertices.Length - 2; i++)
+        {
+            triangleIndices[index++] = 0;
+            triangleIndices[index++] = i + 1;
+            triangleIndices[index++] = i + 2;
+        }
+
+        return triangleIndices;
     }
 }
 
@@ -81,28 +86,42 @@ public struct Transform2D
 {
     public float PosX;
     public float PosY;
-    public float Sin;
-    public float Cos;
-    public float ScaleX;
-    public float ScaleY;
+    
+    public float CosScaleX;
+    public float CosScaleY;
+    public float SinScaleX;
+    public float SinScaleY;
     
     public Transform2D(Vector2 position, float rotation, Vector2 scale)
     {
+        float sin = (float) Math.Sin(rotation),
+            cos = (float) Math.Cos(rotation);
+        
         PosX = position.X;
         PosY = position.Y;
-        Sin = (float)Math.Sin(rotation);
-        Cos = (float)Math.Cos(rotation);
-        ScaleX = scale.X;
-        ScaleY = scale.Y;
+        CosScaleX = scale.X * cos;
+        CosScaleY = scale.Y * cos;
+        SinScaleX = scale.X * sin;
+        SinScaleY = scale.Y * sin;
     }
     
     public Transform2D(Vector2 position, float rotation, float scale)
     {
+        float sin = (float) Math.Sin(rotation),
+            cos = (float) Math.Cos(rotation);
+        
         PosX = position.X;
         PosY = position.Y;
-        Sin = (float)Math.Sin(rotation);
-        Cos = (float)Math.Cos(rotation);
-        ScaleX = scale;
-        ScaleY = scale;
+        CosScaleX = scale * cos;
+        CosScaleY = scale * cos;
+        SinScaleX = scale * sin;
+        SinScaleY = scale * sin;
     }
-}
+    
+    public Matrix ToMatrix() => 
+        new (
+            CosScaleX, -SinScaleY, 0, PosX,
+            SinScaleX, CosScaleY, 0, PosY,
+            0, 0, 1, 0,
+            0, 0, 0, 1);
+    }

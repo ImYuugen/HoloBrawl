@@ -11,7 +11,7 @@ namespace HoloBrawl.Core
 
         public static int ScreenWidth { get; private set; } = 1280;
         public static int ScreenHeight { get; private set; } = 720;
-        public static bool Fullscreen { get; private set; } = false;
+        public static bool Fullscreen { get; private set; }
 
         public static void LoadData()
         {
