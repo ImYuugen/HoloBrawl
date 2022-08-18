@@ -401,6 +401,10 @@ public sealed class Shapes : IDisposable
             throw new ArgumentOutOfRangeException(nameof(indexCount),
                 "[ERROR] Index count is too big, passed " + indexCount + ", max is " + _indices.Length);
 
-        if (_vertexCount + vertexCount > _vertices.Length || _indexCount + indexCount > _indices.Length) Flush();
+        if (_vertexCount + vertexCount > _vertices.Length || _indexCount + indexCount > _indices.Length)
+        {
+            Console.WriteLine("[WARNING] Batching is full, flushing");
+            Flush();
+        }
     }
 }

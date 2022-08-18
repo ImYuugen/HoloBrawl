@@ -2,7 +2,6 @@
 using System.Linq;
 using HoloBrawl.Core;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace HoloBrawl.Graphics
 {
@@ -16,8 +15,7 @@ namespace HoloBrawl.Graphics
 
         private readonly float _fov;
         private readonly float _aspectRatio;
-        private readonly Holobrawl _game;
-        
+
         public Vector2 Position { get; private set; }
         public float BaseZ { get; }
         public float Z { get; private set; }
@@ -32,7 +30,6 @@ namespace HoloBrawl.Graphics
             
             _aspectRatio = (float)screen.Width / screen.Height;
             _fov = MathHelper.PiOver2;
-            _game = screen.Game;
 
             Zoom = 1;
             
@@ -85,8 +82,8 @@ namespace HoloBrawl.Graphics
 
         public void FollowPlayers()
         {
-            var players = _game.Players;
-            var camPos = players.Aggregate(Vector2.Zero, (current, player) => current + player.Position);
+            var players = Data.Characters;
+            var camPos = players.Aggregate(Vector2.Zero, (current, player) => current + player.Value.Position);
             camPos /= players.Count;
             
             Position = camPos;
@@ -95,7 +92,8 @@ namespace HoloBrawl.Graphics
         #endregion
         
         #region Zooms
-        public void SetZoom(int amount)
+
+        private void SetZoom(int amount)
         {
             Zoom = amount;
             Zoom = Utils.Clamp(Zoom, MinZoom, MaxZoom);

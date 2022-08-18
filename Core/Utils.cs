@@ -43,7 +43,7 @@ public static class Utils
         var i = BitConverter.SingleToInt32Bits(x);
         i = 0x5f3759df - (i >> 1); // What the fuck?
         x = BitConverter.Int32BitsToSingle(i);
-        x = x * (1.5f - xHalf * x * x);
+        x *= (1.5f - xHalf * x * x);
         return x;
     }
 
@@ -85,17 +85,17 @@ public struct Transform2D
 {
     public float PosX;
     public float PosY;
-    
+
     public float CosScaleX;
     public float CosScaleY;
     public float SinScaleX;
     public float SinScaleY;
-    
+
     public Transform2D(Vector2 position, float rotation, Vector2 scale)
     {
         float sin = (float) Math.Sin(rotation),
             cos = (float) Math.Cos(rotation);
-        
+
         PosX = position.X;
         PosY = position.Y;
         CosScaleX = scale.X * cos;
@@ -103,12 +103,12 @@ public struct Transform2D
         SinScaleX = scale.X * sin;
         SinScaleY = scale.Y * sin;
     }
-    
+
     public Transform2D(Vector2 position, float rotation, float scale)
     {
         float sin = (float) Math.Sin(rotation),
             cos = (float) Math.Cos(rotation);
-        
+
         PosX = position.X;
         PosY = position.Y;
         CosScaleX = scale * cos;
@@ -116,11 +116,35 @@ public struct Transform2D
         SinScaleX = scale * sin;
         SinScaleY = scale * sin;
     }
-    
-    public Matrix ToMatrix() => 
-        new (
+
+    public Matrix ToMatrix() =>
+        new(
             CosScaleX, -SinScaleY, 0, PosX,
             SinScaleX, CosScaleY, 0, PosY,
             0, 0, 1, 0,
             0, 0, 0, 1);
+}
+
+public readonly struct Circle
+{
+    public readonly Vector2 Center;
+    public readonly float Radius;
+    
+    public Circle(Vector2 center, float radius)
+    {
+        Center = center;
+        Radius = radius;
     }
+    
+    public Circle(float x, float y, float radius)
+    {
+        Center = new Vector2(x, y);
+        Radius = radius;
+    }
+    
+    public bool Intersects(Circle other)
+    {
+        var distance = Vector2.Distance(Center, other.Center);
+        return distance < Radius + other.Radius;
+    }
+}
