@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using HoloBrawl.Core;
 using HoloBrawl.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace HoloBrawl.Entities;
 
@@ -20,8 +18,6 @@ public class Character : Entity
      public Hurtbox[] Hurtboxes { get; set; }
      public float Percentage { get; private set; }
      public bool DrawHurtbox { get; set; }
-
-     public Keys[] Keys { get; set; }
 
      public Character(string name, Vector2 position, bool drawHurtbox = false) : base(null, name, position)
      {
@@ -39,6 +35,7 @@ public class Character : Entity
           }
 
           _gravityModifier = 1;
+          _dragCoeff = 0f;
      }
 
      public override void AddForce(Vector2 force)
@@ -46,7 +43,6 @@ public class Character : Entity
           var velX = MathHelper.Clamp(Velocity.X + force.X, -MaxVelX, MaxVelX);
           var velY = MathHelper.Clamp(Velocity.Y + force.Y, -MaxVelY, MaxVelY);
           Velocity = new Vector2(velX, velY);
-          _dragCoeff = 0.5f;
      }
 
      public override void Update(GameTime gameTime)
@@ -63,13 +59,12 @@ public class Character : Entity
      
      public void Draw(Sprites sprites, Shapes shapes)
      {
-          base.Draw(sprites);
-          if (DrawHurtbox)
+          if (sprites is not null) base.Draw(sprites);
+          if (shapes is null || !DrawHurtbox) return;
+          
+          foreach (var hurtbox in Hurtboxes)
           {
-               foreach (var hurtbox in Hurtboxes)
-               {
-                    hurtbox.Draw(shapes);
-               }
+               hurtbox.Draw(shapes);
           }
      }
 }

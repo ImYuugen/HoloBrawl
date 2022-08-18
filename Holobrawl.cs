@@ -126,24 +126,21 @@ namespace HoloBrawl
             _stopwatch.Restart();
 
             _screen.Set();
-            GraphicsDevice.Clear(Color.Black);
-            _sprites.Begin(_camera, false);
-            
-            _shapes.Begin(_camera);
-            for (int i = 0; i < 100; i++)
-            {
-                _shapes.DrawFilledRectangle(-100, i * -100, 200, 100, new Color(i * 10, i * 10, i * 10));
-            }
-            _shapes.End();
+            GraphicsDevice.Clear(Color.White);
 
+            _sprites.Begin(_camera, false);
+            foreach (var charactersValue in Characters.Values)
+            {
+                charactersValue.Draw(_sprites);
+            }
+            _sprites.End();
             _shapes.Begin(_camera);
             foreach (var player in Characters.Values)
             {
-                player.Draw(_sprites, _shapes);
+                player.Draw(null, _shapes);
             }
             _shapes.End();
             
-            _sprites.End();
             _screen.Unset();
             _screen.Present(_sprites);
             

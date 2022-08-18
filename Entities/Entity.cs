@@ -28,14 +28,10 @@ public abstract class Entity
         Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
     }
 
-    public virtual void DrawEntity(Sprites sprites)
+    public void Draw(Sprites sprites)
     {
-        sprites?.Draw(Sprite, new Vector2(Sprite.Height/2f, Sprite.Width/2f), Position, Color.White);
-    }
-    
-    public virtual void Draw(Sprites sprites)
-    {
-        DrawEntity(sprites);
+        if (Sprite is null) return;
+        sprites?.Draw(Sprite, new Vector2(Sprite.Width/2f, Sprite.Height/2f), Position, Color.White);
     }
     
     public virtual void AddForce(Vector2 force)

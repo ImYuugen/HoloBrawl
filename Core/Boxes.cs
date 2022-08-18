@@ -23,37 +23,43 @@ public enum HitboxType
 
 public struct Hurtbox
 {
-    public Rectangle Zone;
+    public float X;
+    public float Y;
+    public float Width;
+    public float Height;
+    
     public HurtboxType Type;
     public Character Owner { get; set; }
 
-    private int BaseX { get; set; }
-    private int BaseY { get; set; }
+    private float BaseX { get; set; }
+    private float BaseY { get; set; }
     
-    public Hurtbox(Rectangle area, HurtboxType type, Character owner)
+    public Hurtbox(float x, float y, float height, float width, HurtboxType type, Character owner)
     {
         Type = type;
         Owner = owner;
-        Zone = new Rectangle(area.X + (int) owner.Position.X,
-            area.Y + (int) owner.Position.Y, area.Width, area.Height);
+        
+        X = x + owner.Position.X;
+        Y = y + owner.Position.Y;
+        Width = width;
+        Height = height;
+        
         BaseX = 0;
         BaseY = 0;
     }
 
-    public bool Intersects(Rectangle rect)
-    {
-        return Zone.Intersects(rect);
-    }
-    
+    public bool Intersects(float x, float y, float width, float height) =>
+        x < this.X + this.Width && this.X < x + width && y + height < this.Y && this.Y + this.Height < y;
+
     public void Update()
     {
-        Zone.X = (int) Owner.Position.X + BaseX;
-        Zone.Y = (int) Owner.Position.Y + BaseY;
+        X = (int) Owner.Position.X + BaseX;
+        Y = (int) Owner.Position.Y + BaseY;
     }
     public void Init(Character owner)
     {
-        BaseX = Zone.X;
-        BaseY = Zone.Y;
+        BaseX = X;
+        BaseY = Y;
         Owner = owner;
     }
     
@@ -61,14 +67,14 @@ public struct Hurtbox
     {
         var color = Type switch
         {
-            HurtboxType.Normal => Color.Yellow,
+            HurtboxType.Normal => Color.Red,
             HurtboxType.Intangible => Color.Blue,
             HurtboxType.Invincible => Color.Purple,
             _ => Color.White
         };
 
-        shapes.DrawFilledRectangle(Zone, new Color(color, .1f));
-        shapes.DrawRectangle(Zone, 1f, color);
+        shapes.DrawFilledRectangle(X, Y, Width, Height, new Color(color, .1f));
+        shapes.DrawRectangle(X, Y, Width, Height, 1f, color);
     }
 }
 
