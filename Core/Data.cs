@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HoloBrawl.Entities;
+using HoloBrawl.Input.Player;
+using HoloBrawl.Terrain;
 using Newtonsoft.Json;
 
 namespace HoloBrawl.Core
@@ -12,8 +14,13 @@ namespace HoloBrawl.Core
         private static readonly string DataPath
             = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\HoloBrawl\";
 
+        public static readonly string ContentPath =
+            @"..\..\..\Content\";
+
         private static readonly string OptionsFile = DataPath + "options.txt";
         private static readonly string CharDataFile = DataPath + "characters.json";
+        private static readonly string ProfilesDataPath = DataPath + @"Profiles\";
+        private static readonly string MapDataPath = ContentPath + "Maps\\";
 
 
         public static int ScreenWidth { get; private set; } = 1280;
@@ -21,6 +28,7 @@ namespace HoloBrawl.Core
         public static bool Fullscreen { get; private set; }
 
         public static Dictionary<string, Character> Characters { get; set; } = new();
+        public static Terrain.Terrain LoadedTerrain { get; private set; }
 
         #region Options
 
@@ -99,17 +107,71 @@ namespace HoloBrawl.Core
             CheckFolderChar();
             var chars = JsonConvert.DeserializeObject<Character[]>(File.ReadAllText(CharDataFile))
                         ?? Array.Empty<Character>();
-            foreach (var character in chars.Where(character => character.Name == name))
+            var matching = chars.FirstOrDefault(character => character.Name == name); // The character with the searched name, the first in the file is selected.
+            if (matching == null)
             {
-                if (Characters.TryAdd(character.Name, character))
-                {
-                    Console.WriteLine($"[INFO] Loaded character: {character.Name}");
-                    continue;
-                }
-                
-                Console.WriteLine("[WARNING] Could not add character: " + character.Name);
+                Console.WriteLine("[WARNING] Could not find character: " + name);
                 return;
             }
+            if (Characters.TryAdd(matching.Name, matching))
+            {
+                Console.WriteLine($"[INFO] Loaded character: {matching.Name}");
+                return;
+            }
+            Console.WriteLine("[WARNING] Could not add character: " + matching.Name);
+        }
+
+        #endregion
+
+        #region MapData
+        
+        private static void CheckFolderMap(string name, out bool found)
+        {
+            if (!Directory.Exists(ContentPath))
+            {
+                Console.WriteLine("[INFO] Creating map directory");
+                Directory.CreateDirectory(ContentPath);
+            }
+            found = File.Exists(MapDataPath + name + ".json");
+        }
+
+        public static void LoadAndSetMap(string mapName)
+        {
+            CheckFolderMap(mapName, out var found);
+            Terrain.Terrain map;
+            if (found)
+                map = JsonConvert.DeserializeObject<Terrain.Terrain>(File.ReadAllText(MapDataPath + mapName + ".json"));
+            else
+            {
+                Console.WriteLine("[WARNING] Could not find map: " + mapName);
+                map = new Terrain.Terrain("null", Array.Empty<Floor>());
+            }
+            LoadedTerrain = map;
+        }
+
+        #endregion
+
+        #region ControlProfiles
+
+        private static void CheckFolderProfiles(string name, out bool found)
+        {
+            if (!Directory.Exists(ProfilesDataPath))
+            {
+                Console.WriteLine("[INFO] Creating profiles directory");
+                Directory.CreateDirectory(ProfilesDataPath);
+            }
+            found = File.Exists(ProfilesDataPath + name + ".json");
+        }
+        
+        public static Controller LoadProfile(string profileName)
+        {
+            CheckFolderProfiles(profileName, out var found);
+            if (found)
+                return JsonConvert.DeserializeObject<Controller>(
+                    File.ReadAllText(ProfilesDataPath + profileName + ".json"));
+            
+            Console.WriteLine("[WARNING] Could not find profile: " + profileName);
+            return new Controller();
         }
 
         #endregion

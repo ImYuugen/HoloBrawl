@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using HoloBrawl.Core;
-using HoloBrawl.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using HoloBrawl.Graphics;
 using HoloBrawl.Input;
+using HoloBrawl.Core;
+using HoloBrawl.Entities;
+using HoloBrawl.Terrain;
 using static HoloBrawl.Core.Data;
 
 namespace HoloBrawl
@@ -73,8 +74,9 @@ namespace HoloBrawl
             LoadCharacter("P2");
             foreach (var character in Characters.Values)
             {
-                character.Init(_textures[character.Name]);
+                character.Init(_textures[character.Name], "Default");
             }
+            LoadAndSetMap("Test");
         }
 
         protected override void Update(GameTime gameTime)
@@ -126,18 +128,22 @@ namespace HoloBrawl
             _stopwatch.Restart();
 
             _screen.Set();
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Color.Black);
 
             _sprites.Begin(_camera, false);
-            foreach (var charactersValue in Characters.Values)
+            foreach (var player in Characters.Values)
             {
-                charactersValue.Draw(_sprites);
+                player.Draw(_sprites);
             }
             _sprites.End();
             _shapes.Begin(_camera);
             foreach (var player in Characters.Values)
             {
                 player.Draw(null, _shapes);
+            }
+            foreach (var floors in LoadedTerrain.Floors)
+            {
+                floors.Draw(_shapes);
             }
             _shapes.End();
             

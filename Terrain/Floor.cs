@@ -14,9 +14,11 @@ public sealed class Floor
     public float OriginX;
     public float OriginY;
     
+    public bool IsPlatform;
+    
     public Texture2D Texture;
 
-    public Floor(Texture2D texture, float x, float y, float width, float height)
+    public Floor(Texture2D texture, float x, float y, float width, float height, bool isPlatform)
     {
         X = x;
         Y = y;
@@ -24,6 +26,15 @@ public sealed class Floor
         Height = height;
         OriginX = width / 2;
         OriginY = height / 2;
+        IsPlatform = isPlatform;
+        Texture = texture;
+    }
+
+    public void Init(Texture2D texture)
+    {
+        OriginX = Width / 2;
+        OriginY = Height / 2;
+        
         Texture = texture;
     }
     
@@ -32,7 +43,7 @@ public sealed class Floor
     /// </summary>
     public void Draw(Shapes shapes)
     {
-        shapes.DrawFilledRectangle(X, Y, Width, Height, Color.Purple);
+        shapes.DrawFilledRectangle(X, Y, Width, Height, Color.Gray);
     }
     
     public void Draw(Sprites sprites)

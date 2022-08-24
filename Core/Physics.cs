@@ -2,5 +2,5 @@
 
 public static class Physics
 {
-    public const float Gravity = -9.8f;
+    public const float Gravity = -98f;
 }

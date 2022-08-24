@@ -48,8 +48,12 @@ public struct Hurtbox
         BaseY = 0;
     }
 
-    public bool Intersects(float x, float y, float width, float height) =>
-        x < this.X + this.Width && this.X < x + width && y + height < this.Y && this.Y + this.Height < y;
+    public bool Intersects(float x, float y, float width, float height)
+    {
+        return X + Width >= x && X <= x + width && Y + Height >= y && Y <= y + height;
+    }
+    public bool Intersects(Hurtbox other) => Intersects(other.X, other.Y, other.Width, other.Height);
+    public bool Intersects(Hitbox other) => Intersects(other.X, other.Y, other.Width, other.Height);
 
     public void Update()
     {
@@ -80,7 +84,11 @@ public struct Hurtbox
 
 public struct Hitbox
 {
-    public Rectangle Zone { get; }
+    public float X;
+    public float Y;
+    public float Width;
+    public float Height;
+    
     public HitboxType Type;
 
     public float Damage { get; }
@@ -101,7 +109,10 @@ public struct Hitbox
         Angle = angle;
         Knockback = fixedKnockback ? defaultKnockback : defaultKnockback * damage / 10;
         
-        Zone = area;
+        X = area.X;
+        Y = area.Y;
+        Width = area.Width;
+        Height = area.Height;
         Type = type; 
         Hitstun = 0;
         Blockstun = 0;
@@ -118,12 +129,12 @@ public struct Hitbox
             _ => Color.Transparent
         };
         
-        shapes.DrawFilledRectangle(Zone, new Color(color, .1f));
-        shapes.DrawRectangle(Zone, 1f, color);
+        shapes.DrawFilledRectangle(X, Y, Width, Height, new Color(color, .1f));
+        shapes.DrawRectangle(X, Y, Width, Height, 1f, color);
     }
     
-    public bool Intersects(Rectangle rect)
-    {
-        return Zone.Intersects(rect);
-    }
+    public bool Intersects (float x, float y, float width, float height) =>
+        x < this.X + this.Width && this.X < x + width && y + height < this.Y && this.Y + this.Height < y;
+    public bool Intersects (Hurtbox other) => Intersects(other.X, other.Y, other.Width, other.Height);
+    public bool Intersects (Hitbox other) => Intersects(other.X, other.Y, other.Width, other.Height);
 }
