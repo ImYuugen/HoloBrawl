@@ -1,0 +1,26 @@
+﻿{
+  "Name": "P1",
+  "Position": "-100, 0",
+  "Velocity": "0, 0",
+  "Rotation": 0,
+  "Friction": 1,
+  "AirFriction": 0.5,
+  "Speed": 0,
+  "JumpSpeed": 10000,
+  "RunningSpeed": 500,
+  "DashSpeed": 1000,
+  "WalkingSpeed": 250,
+  "AirAcceleration": 250,
+  "Hurtboxes":
+  [
+    {
+      "X": -12,
+      "Y": -9,
+      "Width": 24,
+      "Height": 18,
+      "Type": 0
+    }
+  ],
+  "Percentage": 0,
+  "DrawHurtbox": true
+}

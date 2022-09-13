@@ -5,7 +5,7 @@ namespace HoloBrawl.Input;
 
 public sealed class HoloKeyboard
 {
-    private static readonly Lazy<HoloKeyboard> Lazy = new Lazy<HoloKeyboard>(() => new HoloKeyboard());
+    private static readonly Lazy<HoloKeyboard> Lazy = new (() => new HoloKeyboard());
     public static HoloKeyboard Instance => Lazy.Value;
 
     private KeyboardState _currentState;

@@ -18,9 +18,9 @@ namespace HoloBrawl.Core
             @"..\..\..\Content\";
 
         private static readonly string OptionsFile = DataPath + "options.txt";
-        private static readonly string CharDataFile = DataPath + "characters.json";
         private static readonly string ProfilesDataPath = DataPath + @"Profiles\";
-        private static readonly string MapDataPath = ContentPath + "Maps\\";
+        private static readonly string CharDataPath = ContentPath + @"Characters\";
+        private static readonly string MapDataPath = ContentPath + @"Maps\";
 
 
         public static int ScreenWidth { get; private set; } = 1280;
@@ -87,38 +87,32 @@ namespace HoloBrawl.Core
 
         #region CharData
 
-        private static void CheckFolderChar()
+        private static void CheckFolderChar(string chara, out bool found)
         {
-            if (!Directory.Exists(DataPath))
+            if (!Directory.Exists(ContentPath))
             {
-                Console.WriteLine("[INFO] Creating data directory");
-                Directory.CreateDirectory(DataPath);
+                Console.WriteLine("[INFO] Creating map directory");
+                Directory.CreateDirectory(ContentPath);
             }
-
-            if (!File.Exists(CharDataFile))
-            {
-                Console.WriteLine("[INFO] Creating character data file");
-                File.Create(CharDataFile);
-            }
+            found = File.Exists(CharDataPath + chara + ".json");
         }
 
         public static void LoadCharacter(string name)
         {
-            CheckFolderChar();
-            var chars = JsonConvert.DeserializeObject<Character[]>(File.ReadAllText(CharDataFile))
-                        ?? Array.Empty<Character>();
-            var matching = chars.FirstOrDefault(character => character.Name == name); // The character with the searched name, the first in the file is selected.
-            if (matching == null)
+            CheckFolderChar(name, out var found);
+            if (!found)
             {
                 Console.WriteLine("[WARNING] Could not find character: " + name);
                 return;
             }
-            if (Characters.TryAdd(matching.Name, matching))
+
+            var chara = JsonConvert.DeserializeObject<Character>(File.ReadAllText(CharDataPath + name + ".json"));
+            if (Characters.TryAdd(chara.Name, chara))
             {
-                Console.WriteLine($"[INFO] Loaded character: {matching.Name}");
+                Console.WriteLine($"[INFO] Loaded character: {chara.Name}");
                 return;
             }
-            Console.WriteLine("[WARNING] Could not add character: " + matching.Name);
+            Console.WriteLine("[WARNING] Could not add character: " + name);
         }
 
         #endregion
@@ -166,12 +160,16 @@ namespace HoloBrawl.Core
         public static Controller LoadProfile(string profileName)
         {
             CheckFolderProfiles(profileName, out var found);
+            Controller controller;
             if (found)
-                return JsonConvert.DeserializeObject<Controller>(
-                    File.ReadAllText(ProfilesDataPath + profileName + ".json"));
+                controller = JsonConvert.DeserializeObject<Controller>(File.ReadAllText(ProfilesDataPath + profileName + ".json"));
+            else
+            {
+                Console.WriteLine("[WARNING] Could not find profile: " + profileName);
+                controller = JsonConvert.DeserializeObject<Controller>(File.ReadAllText(ProfilesDataPath + "Default.json"));
+            }
             
-            Console.WriteLine("[WARNING] Could not find profile: " + profileName);
-            return new Controller();
+            return controller;
         }
 
         #endregion

@@ -1,4 +1,8 @@
-﻿using HoloBrawl.Entities;
+﻿using System;
+using System.IO;
+using HoloBrawl.Core;
+using HoloBrawl.Entities;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace HoloBrawl.Input.Player;
@@ -11,12 +15,12 @@ public class Controller
 {
     private Character controlledCharacter;
     private HoloKeyboard keyboard = HoloKeyboard.Instance;
+
+    public string ProfileName;
+    public Keys[] Controls;
     
-    public string ProfileName { get; private set; }
-    public Keys[] Controls { get; private set; }
-
-    public Controller() { ProfileName = "Default"; Controls = new[] {Keys.W, Keys.A, Keys.S, Keys.D, Keys.Space}; } // If not instantiated in Json, it's default
-
+    public Controller(){}
+    public Controller(string name, Keys[] keys) { ProfileName = name; Controls = keys; }
     public Controller(Character controlledCharacter)
     {
         this.controlledCharacter = controlledCharacter;
@@ -31,26 +35,83 @@ public class Controller
 
     public void Move()
     {
-        if (keyboard.IsKeyDown(Controls[0]))
+        Vector2 movement = Vector2.Zero;
+        bool dash = false;
+        if (controlledCharacter == null) return;
+
+        if (controlledCharacter.IsGrounded)
         {
-            // Up
+            if (!controlledCharacter.IsDashing && keyboard.IsKeyClicked(Controls[5]))
+            {
+                dash = true;
+            } //Dash
+            if (keyboard.IsKeyDown(Controls[1]))
+            {
+                movement.X += -controlledCharacter.WalkingSpeed;
+                controlledCharacter.IsFacingRight = false;
+            } //Left
+            if (keyboard.IsKeyDown(Controls[3]))
+            {
+                movement.X += controlledCharacter.WalkingSpeed;
+                controlledCharacter.IsFacingRight = true;
+            } //Right
+            if (keyboard.IsKeyClicked(Controls[4]))
+            {
+                controlledCharacter.Accelerate(0, controlledCharacter.JumpSpeed);
+                controlledCharacter.State = PlayerState.Jumping;
+            } //Jump
         }
-        if (keyboard.IsKeyDown(Controls[1]))
+        else
         {
-            controlledCharacter.AddForceBuffer(-controlledCharacter.Speed, 0);
+            if (keyboard.IsKeyClicked(Controls[5]))
+            {
+                dash = true;
+            } //Dash
+            if (keyboard.IsKeyDown(Controls[1]))
+            {
+                movement.X += -controlledCharacter.AirAcceleration;
+            } //Left
+            if (keyboard.IsKeyDown(Controls[3]))
+            {
+                movement.X += controlledCharacter.AirAcceleration;
+            } //Right
         }
-        if (keyboard.IsKeyDown(Controls[2]))
+
+        if (dash && movement.X != 0)
         {
-            // Down
+            Dash(controlledCharacter.IsFacingRight);
         }
-        if (keyboard.IsKeyDown(Controls[3]))
+        else if (controlledCharacter.IsDashing && controlledCharacter.Lag <= 0)
         {
-            controlledCharacter.AddForceBuffer(controlledCharacter.Speed, 0);
+            controlledCharacter.IsDashing = false;
         }
-        if (keyboard.IsKeyClicked(Controls[4]))
+        
+        if (controlledCharacter.IsGrounded)
         {
-            //TODO: Add checks
-            controlledCharacter.AddForceBuffer(0, controlledCharacter.JumpSpeed);
+            controlledCharacter.SetVel(movement);
+        }
+        else
+        {
+            controlledCharacter.Accelerate(movement.X, 0f);
+        }
+    }
+
+    private void Dash(bool right)
+    {
+        Console.WriteLine($"Player {controlledCharacter.Name} is dashing");
+        if (controlledCharacter.Lag > 0 && !controlledCharacter.IsDashing) return; //If the player is in any other lag state than dashing, don't dash
+
+        Console.WriteLine("Initial dash");
+        controlledCharacter.Lag = (float) Constants.DashLag.TotalSeconds;
+        controlledCharacter.IsDashing = true;
+        
+        if (right)
+        {
+            controlledCharacter.SetVel(Vector2.UnitX * controlledCharacter.DashSpeed);
+        }
+        else
+        {
+            controlledCharacter.SetVel(-Vector2.UnitX * controlledCharacter.DashSpeed);
         }
     }
 }

@@ -1,0 +1,25 @@
+﻿{
+  "Name": "Template",
+  "Position": "0, 0",
+  "Velocity": "0, 0",
+  "Rotation": 0,
+  "Friction": 0,
+  "AirFriction": 0,
+  "Speed": 0,
+  "JumpSpeed": 0,
+  "RunningSpeed": 0,
+  "WalkingSpeed": 0,
+  "AirAcceleration": 0,
+  "Hurtboxes": 
+  [
+    {
+      "X": 0,
+      "Y": 0,
+      "Width": 0,
+      "Height": 0,
+      "Type": 0
+    }
+  ],
+  "Percentage": 0,
+  "DrawHurtbox": false
+}

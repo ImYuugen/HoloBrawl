@@ -9,7 +9,7 @@ namespace HoloBrawl.Entities;
 public abstract class Entity
 {
     public Texture2D Sprite { get; protected set; }
-    public string Name { get; private set; }
+    public string Name { get; set; }
     public Vector2 Position { get; protected set; }
     public Vector2 Velocity { get; protected set; }
     public float Rotation { get; protected set; }

@@ -26,6 +26,8 @@ namespace HoloBrawl
         private Shapes _shapes;
         private Dictionary<string, Texture2D> _textures;
 
+        private bool _paused;
+        
         private Random _random;
         private Stopwatch _stopwatch;
 
@@ -72,22 +74,41 @@ namespace HoloBrawl
             
             LoadCharacter("P1");
             LoadCharacter("P2");
-            foreach (var character in Characters.Values)
-            {
-                character.Init(_textures[character.Name], "Default");
-            }
+            Characters["P1"].Init(_textures["P1"], "P1");
+            Characters["P2"].Init(_textures["P2"], "Default");
             LoadAndSetMap("Test");
         }
 
+        private void Simulate(GameTime gameTime, HoloKeyboard keyboard)
+        {
+
+            foreach (var key in Characters.Keys)
+            {
+                Characters[key].Update(gameTime);
+            }
+
+            _camera.FollowPlayers();
+        }
+        
         protected override void Update(GameTime gameTime)
         {
             var keyboard = HoloKeyboard.Instance;
             keyboard.Update();
             
+            if (keyboard.IsKeyClicked(Keys.P))
+            {
+                _paused = !_paused;
+                Console.WriteLine($"[INFO] {(_paused?"Paused":"Unpaused")}");
+            }
+            
+            if (!_paused)
+                Simulate(gameTime, keyboard);
+            
             if (keyboard.IsKeyClicked(Keys.Escape))
             {
                 Exit();
             }
+            #region debug
 #if DEBUG
             if (keyboard.IsKeyClicked(Keys.F3))
             {
@@ -113,13 +134,8 @@ namespace HoloBrawl
                 Utils.ToggleFullscreen(_graphics);
             }
 #endif
-
-            foreach (var key in Characters.Keys)
-            {
-                Characters[key].Update(gameTime);
-            }
-
-            _camera.FollowPlayers();
+            #endregion
+            
             base.Update(gameTime);
         }
 
@@ -130,21 +146,17 @@ namespace HoloBrawl
             _screen.Set();
             GraphicsDevice.Clear(Color.Black);
 
+            _shapes.Begin(_camera);
             _sprites.Begin(_camera, false);
             foreach (var player in Characters.Values)
             {
-                player.Draw(_sprites);
-            }
-            _sprites.End();
-            _shapes.Begin(_camera);
-            foreach (var player in Characters.Values)
-            {
-                player.Draw(null, _shapes);
+                player.Draw(_sprites, _shapes);
             }
             foreach (var floors in LoadedTerrain.Floors)
             {
                 floors.Draw(_shapes);
             }
+            _sprites.End();
             _shapes.End();
             
             _screen.Unset();
