@@ -1,4 +1,4 @@
-﻿namespace HoloBrawl.Core;
+﻿namespace VBrawler.Core;
 
 public static class Physics
 {

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
-using HoloBrawl.Core;
-using HoloBrawl.Graphics;
-using HoloBrawl.Input.Player;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using VBrawler.Core;
+using VBrawler.Graphics;
+using VBrawler.Input.Player;
 
-namespace HoloBrawl.Entities;
+namespace VBrawler.Entities;
 
 public class Character : Entity
 {

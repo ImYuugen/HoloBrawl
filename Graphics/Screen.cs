@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using HoloBrawl.Core;
+using VBrawler.Core;
 
-namespace HoloBrawl.Graphics
+namespace VBrawler.Graphics
 {
     public sealed class Screen : IDisposable
     {

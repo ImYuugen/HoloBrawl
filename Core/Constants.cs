@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HoloBrawl.Core;
+namespace VBrawler.Core;
 
 public static class Constants
 {

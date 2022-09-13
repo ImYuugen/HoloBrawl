@@ -1,10 +1,8 @@
-﻿using System;
-using HoloBrawl.Core;
-using HoloBrawl.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using VBrawler.Graphics;
 
-namespace HoloBrawl.Entities;
+namespace VBrawler.Entities;
 
 public abstract class Entity
 {

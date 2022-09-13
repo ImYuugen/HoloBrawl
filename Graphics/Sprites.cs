@@ -1,8 +1,8 @@
 ﻿using System;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
-namespace HoloBrawl.Graphics
+namespace VBrawler.Graphics
 {
     public sealed class Sprites : IDisposable
     {

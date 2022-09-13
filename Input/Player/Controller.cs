@@ -1,11 +1,10 @@
 ﻿using System;
-using System.IO;
-using HoloBrawl.Core;
-using HoloBrawl.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using VBrawler.Core;
+using VBrawler.Entities;
 
-namespace HoloBrawl.Input.Player;
+namespace VBrawler.Input.Player;
 
 /// <summary>
 /// Used to control a Character class' movement.
@@ -14,7 +13,7 @@ namespace HoloBrawl.Input.Player;
 public class Controller
 {
     private Character controlledCharacter;
-    private HoloKeyboard keyboard = HoloKeyboard.Instance;
+    private GameKeyboard keyboard = GameKeyboard.Instance;
 
     public string ProfileName;
     public Keys[] Controls;
@@ -24,13 +23,13 @@ public class Controller
     public Controller(Character controlledCharacter)
     {
         this.controlledCharacter = controlledCharacter;
-        keyboard = HoloKeyboard.Instance;
+        keyboard = GameKeyboard.Instance;
     }
     
     public void Init(Character owner)
     { 
         controlledCharacter = owner;
-        keyboard = HoloKeyboard.Instance;
+        keyboard = GameKeyboard.Instance;
     }
 
     public void Move()

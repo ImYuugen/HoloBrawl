@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace HoloBrawl.Core;
+namespace VBrawler.Core;
 
 public static class Utils
 {

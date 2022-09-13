@@ -1,17 +1,17 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Input;
 
-namespace HoloBrawl.Input;
+namespace VBrawler.Input;
 
-public sealed class HoloKeyboard
+public sealed class GameKeyboard
 {
-    private static readonly Lazy<HoloKeyboard> Lazy = new (() => new HoloKeyboard());
-    public static HoloKeyboard Instance => Lazy.Value;
+    private static readonly Lazy<GameKeyboard> Lazy = new (() => new GameKeyboard());
+    public static GameKeyboard Instance => Lazy.Value;
 
     private KeyboardState _currentState;
     private KeyboardState _previousState;
 
-    public HoloKeyboard()
+    public GameKeyboard()
     {
         _previousState = Keyboard.GetState();
         _currentState = _previousState;

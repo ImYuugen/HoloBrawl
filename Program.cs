@@ -1,4 +1,4 @@
-﻿namespace HoloBrawl;
+﻿namespace VBrawler;
 
 public static class Game1
 {

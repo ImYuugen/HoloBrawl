@@ -1,8 +1,8 @@
-﻿using HoloBrawl.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using VBrawler.Graphics;
 
-namespace HoloBrawl.Terrain;
+namespace VBrawler.Terrain;
 
 public sealed class Floor
 {

@@ -1,9 +1,8 @@
-﻿using System;
-using HoloBrawl.Entities;
-using HoloBrawl.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using VBrawler.Entities;
+using VBrawler.Graphics;
 
-namespace HoloBrawl.Core;
+namespace VBrawler.Core;
 
 
 public enum HurtboxType

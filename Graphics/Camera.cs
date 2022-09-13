@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using HoloBrawl.Core;
 using Microsoft.Xna.Framework;
+using VBrawler.Core;
 
-namespace HoloBrawl.Graphics
+namespace VBrawler.Graphics
 {
     public sealed class Camera
     {

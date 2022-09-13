@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using HoloBrawl.Graphics;
-using HoloBrawl.Input;
-using HoloBrawl.Core;
-using HoloBrawl.Entities;
-using HoloBrawl.Terrain;
-using static HoloBrawl.Core.Data;
+using VBrawler.Core;
+using VBrawler.Graphics;
+using VBrawler.Input;
+using static VBrawler.Core.Data;
 
-namespace HoloBrawl
+namespace VBrawler
 {
     public class Holobrawl : Game
     {
@@ -79,7 +76,7 @@ namespace HoloBrawl
             LoadAndSetMap("Test");
         }
 
-        private void Simulate(GameTime gameTime, HoloKeyboard keyboard)
+        private void Simulate(GameTime gameTime, GameKeyboard keyboard)
         {
 
             foreach (var key in Characters.Keys)
@@ -92,7 +89,7 @@ namespace HoloBrawl
         
         protected override void Update(GameTime gameTime)
         {
-            var keyboard = HoloKeyboard.Instance;
+            var keyboard = GameKeyboard.Instance;
             keyboard.Update();
             
             if (keyboard.IsKeyClicked(Keys.P))

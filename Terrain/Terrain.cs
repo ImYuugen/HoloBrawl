@@ -1,4 +1,4 @@
-﻿namespace HoloBrawl.Terrain;
+﻿namespace VBrawler.Terrain;
 
 /// <summary>
 /// Used to store Terrain data, the big stuff is in Floor

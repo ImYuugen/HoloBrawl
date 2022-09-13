@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using HoloBrawl.Entities;
-using HoloBrawl.Input.Player;
-using HoloBrawl.Terrain;
 using Newtonsoft.Json;
+using VBrawler.Entities;
+using VBrawler.Input.Player;
+using VBrawler.Terrain;
 
-namespace HoloBrawl.Core
+namespace VBrawler.Core
 {
     public static class Data
     {
         private static readonly string DataPath
-            = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\HoloBrawl\";
+            = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\VBrawler\";
 
         public static readonly string ContentPath =
             @"..\..\..\Content\";
